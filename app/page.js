@@ -7,9 +7,9 @@ import SearchBox from './components/search-box';
 import AddFavorites from './components/addFavorites';
 import RemoveFavorites from './components/removeFavorites';
 
-// const API_KEY = 'd74b16e8'; // Reminder: Move this to environment variables for production
+const API_KEY = 'd74b16e8'; 
 
-const API_KEY = process.env.REACT_APP_API_KEY;
+// const API_KEY = process.env.API_KEY;
 
 function useDebounce(value, delay) {
   const [debouncedValue, setDebouncedValue] = useState(value);
