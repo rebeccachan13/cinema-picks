@@ -9,6 +9,8 @@ import RemoveFavorites from './components/removeFavorites';
 
 // const OMDB_API_KEY = 'd74b16e8'; // Reminder: Move this to environment variables for production
 
+const OMDB_API_KEY = process.env.OMDB_API_KEY;
+
 // Custom hook for debouncing
 function useDebounce(value, delay) {
   const [debouncedValue, setDebouncedValue] = useState(value);
