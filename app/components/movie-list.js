@@ -1,8 +1,8 @@
 export default function MovieList({movies, handleFavoritesClick, FavoriteComponent}) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
-      {movies.map((movie, index) => (
-        <div key={index} className="w-full"> {/* Use w-full for each item to take up all available space */}
+      {movies.map((movie) => (
+        <div key={movie.imdbID} className="w-full"> 
           <div className="relative h-96">
             <img src={movie.Poster} alt={movie.Title} className="w-full h-full object-cover transition-transform duration-200 ease-in-out hover:scale-105 rounded-lg" />
             

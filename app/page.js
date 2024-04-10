@@ -1,17 +1,16 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import MovieList from './components/movie-list';
 import MovieListHeading from './components/movieListHeading';
 import SearchBox from './components/search-box';
 import AddFavorites from './components/addFavorites';
 import RemoveFavorites from './components/removeFavorites';
 
-// const OMDB_API_KEY = 'd74b16e8'; // Reminder: Move this to environment variables for production
+// const API_KEY = 'd74b16e8'; // Reminder: Move this to environment variables for production
 
-const OMDB_API_KEY = process.env.OMDB_API_KEY;
+const API_KEY = process.env.REACT_APP_API_KEY;
 
-// Custom hook for debouncing
 function useDebounce(value, delay) {
   const [debouncedValue, setDebouncedValue] = useState(value);
 
@@ -25,6 +24,17 @@ function useDebounce(value, delay) {
   return debouncedValue;
 }
 
+function Alert({ message, isVisible, onClose }) {
+  if (!isVisible) return null;
+
+  return (
+    <div className="fixed top-0 left-0 right-0 bg-green-500 text-white text-center py-4">
+      {message}
+      <button onClick={onClose} className="absolute top-1 right-2 text-xl">&times;</button>
+    </div>
+  );
+}
+
 export default function Page() {
   const [movies, setMovies] = useState([]);
   const [searchValue, setSearchValue] = useState('');
@@ -32,6 +42,9 @@ export default function Page() {
   const [errorMessage, setErrorMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const debouncedSearchValue = useDebounce(searchValue, 500);
+  const [isAlertVisible, setIsAlertVisible] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+
 
   //const delay = ms => new Promise(res => setTimeout(res, ms));
 
@@ -42,21 +55,24 @@ export default function Page() {
         setErrorMessage('');
         return;
       }
-      const url = `https://www.omdbapi.com/?s=${encodeURIComponent(debouncedSearchValue)}&apikey=${OMDB_API_KEY}`;
-      setIsLoading(true); // Start loading
+      const url = `https://www.omdbapi.com/?s=${encodeURIComponent(debouncedSearchValue)}&apikey=${API_KEY}`;
+      setIsLoading(true); 
 
       try {
 
         //await delay(2000);
 
         const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error('Failed to fetch data');
+        }
         const responseJson = await response.json();
 
-        setIsLoading(false); // Stop loading
+        setIsLoading(false); 
         if (responseJson.Search) {
           const moviesWithDetails = await Promise.all(
             responseJson.Search.map(async (movie) => {
-              const detailsUrl = `https://www.omdbapi.com/?i=${movie.imdbID}&apikey=${OMDB_API_KEY}`;
+              const detailsUrl = `https://www.omdbapi.com/?i=${movie.imdbID}&apikey=${API_KEY}`;
               const detailsResponse = await fetch(detailsUrl);
               const detailsJson = await detailsResponse.json();
               return { ...movie, Genre: detailsJson.Genre, Ratings: detailsJson.Ratings };
@@ -70,7 +86,7 @@ export default function Page() {
         }
       } catch (error) {
         console.error('Error fetching movies:', error);
-        setIsLoading(false); // Stop loading on error
+        setIsLoading(false); 
         setErrorMessage('Failed to fetch movies. Please try again later.');
         setMovies([]);
       }
@@ -78,6 +94,8 @@ export default function Page() {
 
     getMovieRequest();
   }, [debouncedSearchValue]);
+
+  
 
   useEffect(() => {
     const movieFavorites = localStorage.getItem('react-movie-app-favorites');
@@ -97,12 +115,18 @@ export default function Page() {
     const newFavoriteList = [...favorites, movie];
     setFavorites(newFavoriteList);
     saveToLocalStorage(newFavoriteList);
+    setAlertMessage(`${movie.Title} added to favorites!`);
+    setIsAlertVisible(true);
+    setTimeout(() => setIsAlertVisible(false), 3000); 
   };
 
   const removeFavoriteMovie = (movie) => {
     const newFavoriteList = favorites.filter((favorite) => favorite.imdbID !== movie.imdbID);
     setFavorites(newFavoriteList);
     saveToLocalStorage(newFavoriteList);
+    setAlertMessage(`${movie.Title} removed from favorites.`);
+    setIsAlertVisible(true);
+    setTimeout(() => setIsAlertVisible(false), 3000); // Hide alert after 3 seconds
   };
 
   const clearFavorites = () => {
@@ -115,6 +139,7 @@ export default function Page() {
 
   return (
     <main className="bg-gray-900 p-2">
+      
       <div className="mb-9">
         <MovieListHeading heading="CinemaPicks" />
         <p className="text-center text-white">Welcome to CinemaPicks, your go-to app for all things movies.</p>
@@ -150,7 +175,11 @@ export default function Page() {
           Clear List
         </button>
       </div>
-      
+      <Alert 
+        message={alertMessage} 
+        isVisible={isAlertVisible} 
+        onClose={() => setIsAlertVisible(false)} 
+      />
     </main>
   );
 }
