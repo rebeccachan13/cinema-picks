@@ -7,7 +7,7 @@ import SearchBox from './components/search-box';
 import AddFavorites from './components/addFavorites';
 import RemoveFavorites from './components/removeFavorites';
 
-const OMDB_API_KEY = 'd74b16e8'; // Reminder: Move this to environment variables for production
+// const OMDB_API_KEY = 'd74b16e8'; // Reminder: Move this to environment variables for production
 
 // Custom hook for debouncing
 function useDebounce(value, delay) {
