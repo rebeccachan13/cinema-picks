@@ -9,8 +9,6 @@ import RemoveFavorites from './components/removeFavorites';
 
 const API_KEY = 'd74b16e8'; 
 
-// const API_KEY = process.env.API_KEY;
-
 function useDebounce(value, delay) {
   const [debouncedValue, setDebouncedValue] = useState(value);
 
@@ -45,8 +43,6 @@ export default function Page() {
   const [isAlertVisible, setIsAlertVisible] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
 
-
-  //const delay = ms => new Promise(res => setTimeout(res, ms));
 
   useEffect(() => {
     const getMovieRequest = async () => {
